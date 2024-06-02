@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Trends</title>
+</head>
+<body style="background-color:rgb(3, 0, 20);">
+    <button id="runScriptBtn">Click here to run the script</button>
+    <div id="result" style="color:white;padding:20px;font-size:larger;"></div>
+    <h1 id="loader" style="display: none;color:white">loading...</h1>
+    <button id="runagain" style="display: none;">Click here to run the script again</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const runagain = document.getElementById('runagain');
+            const loader = document.getElementById('loader');
+
+            window.runScript = async function() {
+                loader.style.display = 'block';
+                try {
+                    const response = await fetch('/run-script');
+                    const data = await response.json();
+                    document.getElementById('result').innerHTML = `
+                        These are the most happening topics as on ${data.date_time}<br>
+                        - ${data.trend1}<br>
+                        - ${data.trend2}<br>
+                        - ${data.trend3}<br>
+                        - ${data.trend4}<br>
+                        - ${data.trend5}<br>
+                        <br>
+                        <br>
+                        The IP address used for this query was ${data.ip_address}.<br><br><br>
+                        Here's a JSON extract of this record from the MongoDB:<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    runagain.style.display = 'block';
+                } catch (error) {
+                    document.getElementById('result').innerHTML = 'An error occurred while running the script. Please try again later'+error;
+                } finally {
+                    loader.style.display = 'none';
+                }
+            };
+
+            document.getElementById('runScriptBtn').onclick = runScript;
+            runagain.onclick = runScript;
+        });
+    </script>
+</body>
+</html>
